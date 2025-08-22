@@ -1,0 +1,1446 @@
+{
+	"info": {
+		"_postman_id": "7e1fa367-eb77-48a7-8af6-ae2c7a0fd311",
+		"name": "Serverest",
+		"description": "<img src=\"https://content.pstmn.io/3c77f547-bb99-4a9e-ac69-b6e5dafc707c/U2VydmVyZXN0LnBuZw==\" alt=\"\">\n\n#### A API Serverest é um servidor REST para estudo de testes de API.\n\n_ServeRest_ permite o estudo de:\n\n- Verbos _GET, POST, PUT_ e _DELETE_ com persistência de dados\n    \n- [Teste de carga](https://github.com/ServeRest/ServeRest#teste-de-carga)\n    \n- Autenticação no header\n    \n- Query string\n    \n- Teste de schema json\n    \n\nO Serverest está disponível tanto [online](https://compassuol.serverest.dev/) quanto localmente.\n\n#### Você pode rodar o Serverest localmente através do NPM\n\nExecute o seguinte comando:\n\n``` shell\nnpx serverest@latest\n\n ```\n\nO servidor estará disponível no seguinte endereço: [<code>http://localhost:3000/</code>](http://localhost:3000/)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38440172"
+	},
+	"item": [
+		{
+			"name": "Usuários",
+			"item": [
+				{
+					"name": "Cadastrar usuário",
+					"item": [
+						{
+							"name": "CT-USR-01 - Criar um novo usuário com dados válidos",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 201 - Usuário criado\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"pm.collectionVariables.set(\"userId\", response._id);\r",
+											"\r",
+											"const requestBody = JSON.parse(pm.request.body.raw);\r",
+											"pm.collectionVariables.set(\"userName\", requestBody.nome);\r",
+											"pm.collectionVariables.set(\"userEmail\", requestBody.email);\r",
+											"pm.collectionVariables.set(\"userPassword\", requestBody.password);\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"{{$randomFullName}}\",\n  \"email\": \"{{$randomEmail}}\",\n  \"password\": \"teste{{$randomInt}}\",\n  \"administrador\": \"true\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/usuarios",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-USR-02 - Tentar criar um usuário com um e-mail já existente",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 - Email já em uso\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de erro 'Este email já está sendo usado'\", () => {\r",
+											"    pm.expect(pm.response.json().message).to.eql(\"Este email já está sendo usado\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"{{$randomFullName}}\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"teste{{$randomInt}}\",\n  \"administrador\": \"true\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/usuarios",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-USR-03 - Tentar criar um usuário com e-mail de provedor restrito (Gmail)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 - Provedor de email restrito\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Valida mensagem de erro para o campo 'email'\", () => {\r",
+											"    pm.expect(pm.response.json()).to.have.property('email');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"Usuário de Gmail\",\n  \"email\": \"{{$randomFirstName}}@gmail.com\",\n  \"password\": \"teste{{$randomInt}}\",\n  \"administrador\": \"true\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/usuarios",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-USR-03 - Tentar criar um usuário com e-mail de provedor restrito (Hotmail)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 - Provedor de email restrito\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Valida mensagem de erro para o campo 'email'\", () => {\r",
+											"    pm.expect(pm.response.json()).to.have.property('email');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"Usuário de Hotmail\",\n  \"email\": \"{{$randomFirstName}}@hotmail.com\",\n  \"password\": \"teste{{$randomInt}}\",\n  \"administrador\": \"true\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/usuarios",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-USR-04 - Tentar criar um usuário com senha fora do limite de caracteres (4-)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 - Senha fora do limite\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de erro para o campo 'password'\", () => {\r",
+											"    pm.expect(pm.response.json().password).to.eql(\"password\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"Senha Curta\",\n  \"email\": \"senha.curta.{{$randomInt}}@qa.com.br\",\n  \"password\": \"1234\",\n  \"administrador\": \"true\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/usuarios",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-USR-04 - Tentar criar um usuário com senha fora do limite de caracteres (11+)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 - Senha fora do limite\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de erro para o campo 'password'\", () => {\r",
+											"    pm.expect(pm.response.json().password).to.eql(\"password\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"Senha Longa\",\n  \"email\": \"senha.longa.{{$randomInt}}@qa.com.br\",\n  \"password\": \"123456789123456789\",\n  \"administrador\": \"true\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/usuarios",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-USR-05 - Tentar criar um usuário com campos inválidos (Email)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 - Email inválido\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Valida mensagem de erro para o campo 'email'\", () => {\r",
+											"    pm.expect(pm.response.json()).to.have.property('email');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"1234\",\n  \"email\": \"emailinvalido\",\n  \"password\": \" \",\n  \"administrador\": \"true\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/usuarios",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-USR-05 - Tentar criar um usuário com campos inválidos (Senha e Nome)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 - Nome/Senha incorretos\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Valida mensagem de erro para o campo 'password'\", () => {\r",
+											"    pm.expect(pm.response.json()).to.have.property('password');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Valida mensagem de erro para o campo 'name'\", () => {\r",
+											"    pm.expect(pm.response.json()).to.have.property('name');\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"1234\",\n  \"email\": \"email.{{$randomInt}}@qa.com.br\",\n  \"password\": \" \",\n  \"administrador\": \"true\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/usuarios",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Requisição `POST` responsável por cadastrar novos usuários, necessita de `nome`, `email`, `password`, `administrator [true, false]`.\n\nAlguns critérios de aceite:\n\n- Não deve ser possível criar um usuário com e-mail já utilizado;\n    \n- Não deverá ser possível cadastrar usuários com e-mails de provedor gmail e hotmail;\n    \n- Os e-mails devem seguir um padrão válido de e-mail para o cadastro;\n    \n- As senhas devem possuír no mínimo 5 caracteres e no máximo 10 caracteres."
+				},
+				{
+					"name": "Consultar usuário",
+					"item": [
+						{
+							"name": "Listar usuários",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseurl}}/usuarios",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios"
+									],
+									"query": [
+										{
+											"key": "_id",
+											"value": "{{userId}}",
+											"description": "ID do usuário",
+											"disabled": true
+										},
+										{
+											"key": "nome",
+											"value": "{{userName}}",
+											"description": "Nome",
+											"disabled": true
+										},
+										{
+											"key": "email",
+											"value": "",
+											"description": "E-mail",
+											"disabled": true
+										},
+										{
+											"key": "password",
+											"value": "",
+											"description": "Senha",
+											"disabled": true
+										},
+										{
+											"key": "administrador",
+											"value": "",
+											"description": "true, false",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Buscar por ID",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"fulano@qa.com\",\n    \"password\": \"teste\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/usuarios/{{userId}}",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios",
+										"{{userId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Requisição `GET` responsável por consultar e listar os usuários, pode trazer tanto a lista completa de usuários quanto consultar individualmente através do `{user_id}`."
+				},
+				{
+					"name": "Editar usuário",
+					"item": [
+						{
+							"name": "CT-USR-06 - Atualizar um usuário existente com um ID válido",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200 - Registro alterado\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de 'Registro alterado com sucesso'\", () => {\r",
+											"    pm.expect(pm.response.json().message).to.eql(\"Registro alterado com sucesso\");\r",
+											"})\r",
+											"\r",
+											"const requestBody = JSON.parse(pm.request.body.raw);\r",
+											"pm.collectionVariables.set(\"userName\", requestBody.nome);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nome\": \"Nome Alterado\",\n    \"email\": \"{{userEmail}}\",\n    \"password\": \"{{userPassword}}\",\n    \"administrador\": \"true\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/usuarios/{{userId}}",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios",
+										"{{userId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-USR-07 - Criar um novo usuário ao tentar atualizar com um ID inexistente",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 201 - Cadastro realizado via PUT\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de 'Cadastro realizado com sucesso'\", () => {\r",
+											"    pm.expect(pm.response.json().message).to.eql(\"Cadastro realizado com sucesso\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"Usuário Criado via PUT\",\n  \"email\": \"put.novo.{{$randomInt}}@qa.com.br\",\n  \"password\": \"senhavalida\",\n  \"administrador\": \"true\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/usuarios/{{$randomAlphaNumeric}}",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios",
+										"{{$randomAlphaNumeric}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-USR-08 - Criar um novo usuário usando um email existente",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 - Email já utilizado\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem contendo 'Email usado'\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include(\"usado\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"{{$randomFullName}}\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"teste{{$randomInt}}\",\n  \"administrador\": \"true\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/usuarios/{{$randomAlphaNumeric}}",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios",
+										"{{$randomAlphaNumeric}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Requisição `PUT` responsável por editar o usuário, é necessário passar no corpo todos os dados de `nome`, `email`, `password`, `administrator [true, false.` Além disso, é necessário passar o `{user_id}`.\n\nAlguns critérios de aceite:\n\n- Caso não seja encontrado usuário com o ID informado no PUT, um novo usuário deverá ser criado;\n    \n- Não deve ser possível cadastrar usuário com e-mail já utilizado utilizando PUT."
+				},
+				{
+					"name": "Excluir usuário",
+					"item": [
+						{
+							"name": "Excluir usuário",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseurl}}/usuarios/{{userId}}",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios",
+										"{{userId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Excluir usuário inexistente",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status 200 - Usuário inexistente\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Contém mensagem de erro 'não excluído'\", function () {\r",
+											"    pm.expect(pm.response.text()).to.include(\"excluído\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseurl}}/usuarios/{{$randomAlphaNumeric}}",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"usuarios",
+										"{{$randomAlphaNumeric}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Requisição `DELETE` responsável por deletar o usuário, sendo necessário fornecer o `{user_id}` do usuário a ser deletado.\n\nNão é possivel deletar um usuário que está com um carrinho ativo."
+				}
+			],
+			"description": "Seção de usuários do Serverest, trata-se do cadastro, consulta e remoção de usuários."
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Realizar Login",
+					"item": [
+						{
+							"name": "CT-LOG-01 - Realizar login com credenciais válidas e receber token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200 - Login bem-sucedido\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"let response = pm.response.json();\r",
+											"let auth = response.authorization.split(\" \")\r",
+											"pm.collectionVariables.set(\"authToken\", auth[1]);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/login",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-LOG-02 - Realizar login com senha incorreta",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 401 - Credenciais inválidas\", () => {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de 'Email e/ou senha inválidos'\", () => {\r",
+											"    pm.expect(pm.response.json().message).to.eql(\"Email e/ou senha inválidos\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"senhaIncorreta\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/login",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-LOG-03 - Tentar realizar login com um e-mail não cadastrado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 401 - Credenciais inválidas\", () => {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de 'Email e/ou senha inválidos'\", () => {\r",
+											"    pm.expect(pm.response.json().message).to.eql(\"Email e/ou senha inválidos\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"emailnaocadastrado@qa.com.br\",\n  \"password\": \"senhaIncorreta\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/login",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Requisição `POST` que realiza o login do usuário, necessita de email e senha e retorna um código de autenticação."
+				}
+			],
+			"description": "Seção de login do serverest, é responsável apenas por fazer o login."
+		},
+		{
+			"name": "Produtos",
+			"item": [
+				{
+					"name": "Cadastrar produto",
+					"item": [
+						{
+							"name": "CT-PRO-01 - Cadastrar um novo produto com token de autenticação válido",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 201 - Produto cadastrado\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"const response = pm.response.json();\r",
+											"pm.collectionVariables.set(\"productId\", response._id);\r",
+											"const requestBody = JSON.parse(pm.request.body.raw);\r",
+											"pm.collectionVariables.set(\"productName\", requestBody.nome);"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"Logitech MX Vertical {{$randomInt}}\",\n  \"preco\": 470,\n  \"descricao\": \"Mouse\",\n  \"quantidade\": 381\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/produtos",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-PRO-02 - Tentar cadastrar um produto sem token de autenticação",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 401 - Rota protegida\", () => {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem sobre token ausente ou inválido\", () => {\r",
+											"    pm.expect(pm.response.json().message).to.eql(\"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "tokeninexistente",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"Logitech MX Vertical {{$randomInt}}\",\n  \"preco\": 470,\n  \"descricao\": \"Mouse\",\n  \"quantidade\": 381\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/produtos",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-PRO-03 - Tentar cadastrar um produto com nome já utilizado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 - Nome de produto duplicado\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de 'Já existe produto com esse nome'\", () => {\r",
+											"    pm.expect(pm.response.json().message).to.eql(\"Já existe produto com esse nome\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"{{productName}}\",\n  \"preco\": 100,\n  \"descricao\": \"Outra Descrição\",\n  \"quantidade\": 50\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/produtos",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Requisição `POST` responsável por cadastrar novos produtos, necessita de `nome`, `preco`, `descricao`, `quantidade`.\n\nAlguns critérios de aceite:\n\n- Usuários não autenticados não devem conseguir realizar ações na rota de Produtos;\n    \n- Não deve ser possível realizar o cadastro de produtos com nomes já utilizados."
+				},
+				{
+					"name": "Consultar produto",
+					"item": [
+						{
+							"name": "Listar produtos",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseurl}}/produtos",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"produtos"
+									],
+									"query": [
+										{
+											"key": "_id",
+											"value": "{{product_id}}",
+											"description": "ID do produto",
+											"disabled": true
+										},
+										{
+											"key": "nome",
+											"value": null,
+											"description": "Nome ",
+											"disabled": true
+										},
+										{
+											"key": "preco",
+											"value": null,
+											"description": "Preço",
+											"disabled": true
+										},
+										{
+											"key": "descricao",
+											"value": null,
+											"description": "Descrição",
+											"disabled": true
+										},
+										{
+											"key": "quantidade",
+											"value": null,
+											"description": "Quantidade",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Buscar por ID",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseurl}}/produtos/{{productId}}",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"produtos",
+										"{{productId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Requisição `GET` responsável por consultar e listar os produtos, pode trazer tanto a lista completa de produtos quanto consultar individualmente através do `{product_id}`."
+				},
+				{
+					"name": "Editar produto",
+					"item": [
+						{
+							"name": "CT-PRO-04 - Criar um novo produto com ID inexistente",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 201 - Produto Criado\", () => {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de 'Cadastro realizado com sucesso'\", () => {\r",
+											"    pm.expect(pm.response.json().message).to.eql(\"Cadastro realizado com sucesso\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nome\": \"Produto PUT {{$randomInt}}\",\n    \"preco\": 470,\n    \"descricao\": \"Mouse\",\n    \"quantidade\": 381\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/produtos/1234567812345678",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"produtos",
+										"1234567812345678"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-PRO-05 - Tentar criar um produto com nome duplicado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 - Nome de produto duplicado\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de 'Já existe produto com esse nome'\", () => {\r",
+											"    pm.expect(pm.response.json().message).to.eql(\"Já existe produto com esse nome\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"nome\": \"{{productName}}\",\n    \"preco\": 470,\n    \"descricao\": \"Mouse\",\n    \"quantidade\": 381\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseurl}}/produtos/1234567812345678",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"produtos",
+										"1234567812345678"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Requisição `PUT` responsável por editar o usuário, é necessário passar no corpo todos os dados de `nome`, `preco`, `descricao`, `quantidade`. Além disso, é necessário passar o `{product_id}`.\n\nAlguns critérios de aceite:\n\n- Caso não exista produto com o o ID informado na hora do UPDATE, um novo produto deverá ser criado;\n    \n- Produtos criados através do PUT não poderão ter nomes previamente cadastrados."
+				},
+				{
+					"name": "Excluir produto",
+					"item": [
+						{
+							"name": "CT-PRO-06 - Tentar excluir um produto que está dentro de um carrinho",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"console.log(\"Iniciando script de setup: Criar carrinho...\");\r",
+											"\r",
+											"const token = pm.variables.get(\"authToken\");\r",
+											"const proId = pm.variables.get(\"productId\");\r",
+											"\r",
+											"console.log(token);\r",
+											"console.log(proId);\r",
+											"\r",
+											"const requestBody = {\r",
+											"    \"produtos\": [{\r",
+											"        \"idProduto\": proId,\r",
+											"        \"quantidade\": 1\r",
+											"    }]\r",
+											"};\r",
+											"\r",
+											"const postRequest = {\r",
+											"    url: pm.variables.get(\"baseurl\") + \"/carrinhos\",\r",
+											"    method: \"POST\",\r",
+											"    header: {\r",
+											"        'Authorization': token\r",
+											"    },\r",
+											"    body: {\r",
+											"        mode: \"raw\",\r",
+											"        raw: JSON.stringify(requestBody)\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"pm.sendRequest(postRequest, (error, response) => {\r",
+											"    if (error) {\r",
+											"        console.error(\"Erro no setup:\", error);\r",
+											"    } else {\r",
+											"        console.log(\"Setup concluído: Carrinho criado com sucesso.\");\r",
+											"        pm.test(\"SETUP - Status code é 201 (Carrinho criado)\", () => {\r",
+											"            pm.expect(response).to.have.status(201);\r",
+											"        });\r",
+											"        pm.collectionVariables.set(\"cartId\", response.json()._id);\r",
+											"    }\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 - Não permite exclusão de produto em carrinho\", () => {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de erro correta\", () => {\r",
+											"    pm.expect(pm.response.json().message).to.eql(\"Não é permitido excluir produto que faz parte de carrinho\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseurl}}/produtos/{{productId}}",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"produtos",
+										"{{productId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "CT-PRO-07 - Excluir um produto que não está em um carrinho",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200 - Registro excluído\", () => {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de 'Registro excluído com sucesso'\", () => {\r",
+											"    pm.expect(pm.response.json().message).to.eql(\"Registro excluído com sucesso\");\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseurl}}/produtos/{{productId}}",
+									"host": [
+										"{{baseurl}}"
+									],
+									"path": [
+										"produtos",
+										"{{productId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "Requisição `DELETE` responsável por deletar o produto, sendo necessário fornecer o `{product_id}` do produto a ser deletado.\n\nNão é possivel deletar um produto que faz parte de um carrinho."
+				}
+			],
+			"description": "Seção de produtos do Serverest, trata-se do cadastro, consulta e remoção de produtos."
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseurl",
+			"value": "https://compassuol.serverest.dev"
+		},
+		{
+			"key": "userName",
+			"value": ""
+		},
+		{
+			"key": "userEmail",
+			"value": ""
+		},
+		{
+			"key": "userPassword",
+			"value": "",
+			"description": {
+				"content": "",
+				"type": "text/plain"
+			}
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"description": {
+				"content": "",
+				"type": "text/plain"
+			}
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"description": {
+				"content": "",
+				"type": "text/plain"
+			}
+		},
+		{
+			"key": "productId",
+			"value": "",
+			"description": {
+				"content": "",
+				"type": "text/plain"
+			}
+		},
+		{
+			"key": "productName",
+			"value": ""
+		},
+		{
+			"key": "cartId",
+			"value": ""
+		}
+	]
+}
