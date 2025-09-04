@@ -23,15 +23,19 @@ robot --version
 
 ```
 .
-├── booking.robot   # Arquivo com todos os casos de teste
-└── README.md                    # Documentação do projeto
+├── README.md                     #Documentação do Projeto
+├── resources                     #Pasta contendo os recursos para execução
+│   ├── keywords.robot
+│   └── variables.robot
+└── tests                         #Pasta contendo o teste
+    └── booking_tests.robot         
 ```
 
 ## 🚀 Executando os Testes
 Na raiz do projeto, execute:
 
 ```bash
-robot booking.robot
+API_USERNAME=admin API_PASSWORD=password123 robot tests/booking_tests.robot
 ```
 
 ## ✅ Casos de Teste Implementados
@@ -45,6 +49,10 @@ Cria uma nova reserva.
 Atualiza os dados de uma reserva existente, utilizando o token.
 - Deletar Booking (DELETE /booking/{id})
 Remove uma reserva existente, utilizando o token.
+- Autenticação com token inexistente
+Tenta alterar uma reserva com um token que não foi gerado.
+- Booking inexistente
+Busca um boooking que não foi criado.
 
 ## 📊 Relatórios de Execução
 Após rodar os testes, o Robot Framework gera automaticamente 3 arquivos na pasta do projeto:
