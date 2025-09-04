@@ -49,9 +49,9 @@ Cria uma nova reserva.
 Atualiza os dados de uma reserva existente, utilizando o token.
 - Deletar Booking (DELETE /booking/{id})
 Remove uma reserva existente, utilizando o token.
-- Autenticação com token inexistente
+- Autenticação com token inexistente (PUT /booking/{id})
 Tenta alterar uma reserva com um token que não foi gerado.
-- Booking inexistente
+- Booking inexistente (GET /booking/{id})
 Busca um boooking que não foi criado.
 
 ## 📊 Relatórios de Execução
